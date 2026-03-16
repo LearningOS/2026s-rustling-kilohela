@@ -3,10 +3,31 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T: Ord + Copy>(array: &mut [T]){
+
+    let l = 0;
+    let r = array.len() - 1;
+    let mut i = l;
+    let mut j = r;
+    let x = array[l + ((r - l) >> 1)];
+
+    while i <= j {
+        while array[i] < x {
+            i += 1;
+        }
+        while array[j] > x {
+            j -= 1;
+        }
+        if i <= j {
+            array.swap(i, j);
+            i += 1;
+            if j > 0 { j -= 1; } else {break;}
+        }
+    }
+    if(l < j){ sort(&mut array[l..=j]);}
+    if(i < r){ sort(&mut array[i..=r]);}
+
 }
 #[cfg(test)]
 mod tests {

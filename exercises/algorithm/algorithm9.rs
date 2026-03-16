@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,15 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.count += 1;
+        self.items.push(value);
+        let mut idx = self.items.len() - 1;
+        let mut p = self.parent_idx(idx);
+        while idx != 1 && (self.comparator)(&self.items[idx], &self.items[p]) {
+            self.items.swap(idx, p);
+            idx = p;
+            p = self.parent_idx(p);
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +64,15 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let l_idx= self.left_child_idx(idx);
+        let r_idx= self.right_child_idx(idx);
+        let l = self.items.get(l_idx).unwrap();
+        let r = self.items.get(r_idx);
+        if r.is_none() || (self.comparator)(l, r.unwrap()){
+            l_idx
+        } else {
+            r_idx
+        }
     }
 }
 
@@ -79,13 +93,25 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default + Clone,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.count == 0 {return None;}
+        let ret = Some(self.items[1].clone());
+
+        let mut idx = 1;
+        let v = self.items.pop().unwrap();
+        self.count -= 1;
+        if self.items.get(1).is_some() {self.items[1] = v.clone();}
+        while self.children_present(idx) {
+            let c_idx = self.smallest_child_idx(idx);
+            if (self.comparator)(&v, &self.items[c_idx]) {break;}
+            self.items.swap(idx, c_idx);
+            idx = c_idx;
+        }
+        return ret;
     }
 }
 
